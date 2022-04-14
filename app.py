@@ -28,11 +28,11 @@ class events(db.Model):
     event_finish_lng = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
     created_at = db.Column(TIMESTAMP,default=datetime.datetime.now)
 class logs(db.Model):
-    username = db.Column(db.String(20), unique=True,nullable=False, primary_key=True)
-    event_name = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    log_lat = db.Column(DATETIME, unique=False,nullable=False, primary_key=False)
-    log_lng = db.Column(DATETIME, unique=False,nullable=False, primary_key=False)
-    created_at = db.Column(TIMESTAMP,default=datetime.datetime.now, unique=False,nullable=False, primary_key=False)
+    username = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
+    event_name = db.Column(db.String(20), unique=True,nullable=False, primary_key=False)
+    log_lat = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
+    log_lng = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
+    created_at = db.Column(TIMESTAMP,default=datetime.datetime.now, unique=False,nullable=False, primary_key=True)
 @app.route('/api/v1/users/create', methods=['POST'])
 def register():
     username = request.json['username']
@@ -53,11 +53,10 @@ def login():
            db.session.commit()
     return jsonify({"msg": "login sukses","token": token,}), 200
 @app.route('/api/v1/events/create', methods=['POST'])
-def event():
+def create_event():
     token =  request.json['token']
     username=users.query.filter_by(token=token).first()
     user = str(username.username)
-    print(user)
     event_name = request.json['event_start_time']
     event_start_time = request.json['event_start_time']
     event_start_time_obj = datetime.datetime.strptime(event_start_time, '%Y-%m-%d %H:%M:%S.%f')
@@ -77,28 +76,29 @@ def event():
                     event_finish_lng = event_finish_lng)
     db.session.add(eventt)
     db.session.commit()
-    return jsonify({"msg": "embuat event sukses"}), 200
+    return jsonify({"msg": "membuat event sukses"}), 200
 
 @app.route('/api/v1/logs', methods=['POST'])
-def logs():
+def create_logs():
     token = request.json['token']
     username=users.query.filter_by(token=token).first()
     user=str(username.username)
     print(user)
-    log = logs(username = user, event_name = request.json['event_name'],log_lat = request.json['log_lat'], log_lng = request.json['log_lng'])
-
+    log = logs(username = format(user), event_name = request.json['event_name'],log_lat = request.json['log_lat'], log_lng = request.json['log_lng'])
     db.session.add(log)
     db.session.commit()
     return jsonify({"msg": "Log berhasil dibuat"}), 200
 
-@app.route('/api/v1/users/logs/<event_name>', methods=['GET'])
-def view_logs(event_name):
-    log = logs.query.filter_by(event_name=event_name).first()
-    for i in log :
-        print(log.username[i]) 
-        print(log.logs_at[i])
-        print(log.logs_ing[i])
-        print(log.created_at[i])
-    return jsonify({"msg": "Log berhasil dibuat"}), 200
+@app.route('/api/v1/users/logs/<token>/<event_name>', methods=['GET'])
+def view_logs(token,event_name):
+    view= logs.query.filter_by(event_name=event_name).all()
+    
+    log = []
+
+    for i in view:
+        dictlogs = {}
+        dictlogs.update({"username": i.username,"log_lat": i.log_lat, "log_lng": i.log_lng, "create_at": i.created_at})
+        log.append(dictlogs)
+    return jsonify(log), 200
 if __name__ == '__main__':
   app.run(debug = True, port=5000)
