@@ -45,10 +45,10 @@ def register():
 def login():
     username = request.json['username']
     password = request.json['password']
-    i=15
+    j=15
     user= users.query.filter_by(username=username).first()
     if not user or not check_password_hash(user.password, password):
-           token = ''.join(random.choices(string.ascii_uppercase + string.digits, k = i))
+           token = ''.join(random.choices(string.ascii_uppercase + string.digits, k = j))
            user.token= token
            db.session.commit()
     return jsonify({"msg": "login sukses","token": token,}), 200
@@ -60,20 +60,21 @@ def event():
     print(user)
     event_name = request.json['event_start_time']
     event_start_time = request.json['event_start_time']
+    event_start_time_obj = datetime.datetime.strptime(event_start_time, '%Y-%m-%d %H:%M:%S.%f')
     event_end_time = request.json['event_end_time']
+    event_end_time_obj = datetime.datetime.strptime(event_end_time, '%Y-%m-%d %H:%M:%S.%f')
     event_start_lat = request.json['event_start_lat']
     event_start_lng = request.json['event_start_lng']
     event_finish_lat = request.json['event_finish_lat']
     event_finish_lng = request.json['event_finish_lng']
     eventt = events(event_creator = user,
                     event_name = event_name,
-                    event_start_time = event_start_time,
-                    event_end_time = event_end_time,
+                    event_start_time = event_start_time_obj,
+                    event_end_time = event_end_time_obj,
                     event_start_lat = event_start_lat,
                     event_start_lng = event_start_lng,
                     event_finish_lat = event_finish_lat,
-                    event_finish_lng = event_finish_lng,
-                    created_at=datetime.datetime.now)
+                    event_finish_lng = event_finish_lng)
     db.session.add(eventt)
     db.session.commit()
     return jsonify({"msg": "embuat event sukses"}), 200
