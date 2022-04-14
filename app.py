@@ -1,7 +1,8 @@
 #nama kelompok :
 # Rizky Dwi Saputra 19090107
 # Wahyu Zuhudistia Khoiri 19090129
-# Arief Rachman 19090012
+# Arief Rachman 19090012 
+# M Rizqi Fauzi Maksum 19090142
 from flask import Flask,request,jsonify
 from flask_httpauth import HTTPTokenAuth
 import random, os, string
