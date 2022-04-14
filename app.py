@@ -1,4 +1,4 @@
-#nama kelompok :
+# nama kelompok :
 # Rizky Dwi Saputra 19090107
 # Wahyu Zuhudistia Khoiri 19090129
 # Arief Rachman 19090012 
@@ -28,7 +28,7 @@ class events(db.Model):
     event_start_time = db.Column(DATETIME, unique=False,nullable=False, primary_key=False)
     event_end_time = db.Column(DATETIME, unique=False,nullable=False, primary_key=False)
     event_start_lat= db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    event_start_lng =db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
+    event_start_lng = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
     event_finish_lat = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
     event_finish_lng = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
     created_at = db.Column(TIMESTAMP,default=datetime.datetime.now)
