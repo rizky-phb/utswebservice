@@ -1,7 +1,3 @@
-#nama kelompok :
-# Rizky Dwi Saputra 19090107
-# Wahyu Zuhudistia Khoiri 19090129
-# Arief Rachman 19090012
 from flask import Flask,request,jsonify
 from flask_httpauth import HTTPTokenAuth
 import random, os, string
@@ -16,27 +12,6 @@ database_file = "sqlite:///{}".format(os.path.join(project_dir, "DBGPS.db"))
 app.config["SQLALCHEMY_DATABASE_URI"] = database_file
 db = SQLAlchemy(app)
 auth = HTTPTokenAuth(scheme='Bearer')
-class users(db.Model):
-    username = db.Column(db.String(20), unique=True,nullable=False, primary_key=True)
-    password = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    token = db.Column(db.String(20), unique=False,nullable=True, primary_key=False)
-    created_at = db.Column(TIMESTAMP,default=datetime.datetime.now)
-class events(db.Model):
-    event_creator = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    event_name = db.Column(db.String(20), unique=False,nullable=False, primary_key=True)
-    event_start_time = db.Column(DATETIME, unique=False,nullable=False, primary_key=False)
-    event_end_time = db.Column(DATETIME, unique=False,nullable=False, primary_key=False)
-    event_start_lat= db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    event_start_lng =db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    event_finish_lat = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    event_finish_lng = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    created_at = db.Column(TIMESTAMP,default=datetime.datetime.now)
-class logs(db.Model):
-    username = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    event_name = db.Column(db.String(20), unique=True,nullable=False, primary_key=False)
-    log_lat = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    log_lng = db.Column(db.String(20), unique=False,nullable=False, primary_key=False)
-    created_at = db.Column(TIMESTAMP,default=datetime.datetime.now, unique=False,nullable=False, primary_key=True)
 @app.route('/api/v1/users/create', methods=['POST'])
 def register():
     username = request.json['username']
@@ -93,16 +68,16 @@ def create_logs():
     db.session.commit()
     return jsonify({"msg": "Log berhasil dibuat"}), 200
 
-@app.route('/api/v1/users/logs/<token>/<event_name>', methods=['GET'])
-def view_logs(token,event_name):
-    view= logs.query.filter_by(event_name=event_name).all()
-    
-    log = []
+@app.route('/api/v1/users/logs/<event_name>', methods=['GET'])
+def view_logs(event_name):
+    log = logs.query.filter_by(event_name=event_name).all()
+    listt=[]
+    for i in log :
+        listtt={}
+        a= log.username[i]
+        listtt.append(a)
+    listt.append(listtt)
 
-    for i in view:
-        dictlogs = {}
-        dictlogs.update({"username": i.username,"log_lat": i.log_lat, "log_lng": i.log_lng, "create_at": i.created_at})
-        log.append(dictlogs)
-    return jsonify(log), 200
+    return jsonify(listt), 200
 if __name__ == '__main__':
   app.run(debug = True, port=5000)
